@@ -222,7 +222,7 @@ Per instance and block, before → after scheduling:
 | Machine | Emulated cycles | Estimated interlocks | Hardware |
 | --- | --- | --- | --- |
 | Two-track reverb (per pair) | 4,857 → 4,469 | 1,137 → 380 | Generator + 7 pairs + load meter: first underrun 30 → **42** steps (512 cycles each): at least ~880 cycles freed per pair, against ~990–1,090 predicted. Both tracks of each pair now sit at the slot floor, so the gain is a lower bound. The emulator's threshold moved only 53 → 51. |
-| 4-pole ladder filter | unchanged | ~950 → ~500 | Generator + 14 instances with envelope cutoff and envelope VCA: ~700 above the slot floor per instance |
+| 4-pole ladder filter | unchanged | ~950 → ~500 | Generator + 14 instances with envelope cutoff and envelope VCA: ~700 above the slot floor per instance. A later bit-exact pass removing about 64 AGU cycles per block moved the same kit from 23 to 24 load-meter steps (see below) |
 | State-variable filter | +65 | ~755 → ~500 | Same kit: ~180 above the floor per instance |
 | Dual oscillator | unchanged | 385 → 161 (worst block) | 15 instances: at the floor, with the same headroom whether the oscillators are plain static saws or PWM with slide |
 
@@ -243,9 +243,26 @@ transfer stalls.
   were freed.
 - **The earlier 880:** the result in the table above came from a kit whose
   slots sat at the floor, so it was never a clean check.
-- **Rule for now:** treat estimated arithmetic and transfer stalls as an upper
-  bound. AGU interlocks have not been tested on their own; avoid them anyway
-  (see [instruction cache](#instruction-cache)).
+
+**AGU interlocks are real (2026-10-11).** The 4-pole ladder filter's table
+lookup was rescheduled, bit-exact, removing mainly AGU interlocks.
+- **The change:** the table base is added to the index in the accumulator
+  (`move n4,a`, then `mac y1,#13,a`) instead of a `(r4)+n4` right after the R4
+  write. The next sample's input product is computed in the remaining gap
+  (software pipelining).
+- **Estimate:** about 64 AGU cycles per block removed, 32 arithmetic stalls
+  added, 4 more emulated cycles.
+- **Kit:** a generator, 14 instances (envelope on the cutoff, envelope VCA)
+  and a load meter. The first underrun moved from 23 to 24 steps of 512
+  cycles, 0–73 cycles per instance. All of it is hardware-only, and it agrees
+  with the AGU part of the estimate.
+
+**Rule:**
+- **AGU interlocks:** count them at about the estimator's figure, and avoid
+  them by writing Rn, Nn and Mn three instructions before use. Independent
+  work (the next sample's loads, for example) belongs in the gap.
+- **Arithmetic and transfer stalls:** treat them as nearly free on hardware;
+  rescheduling for them alone is not worth code size.
 
 **The slot floor caps the gain.** A machine already under the floor (3,072
 cycles plus dispatch; about 3.1k–3.5k on hardware) gains nothing from scheduling (see [budgeting](#budgeting)).
