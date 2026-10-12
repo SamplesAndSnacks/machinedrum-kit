@@ -148,7 +148,7 @@ labels   = ['GAIN', '', '', '', '', '', '', '']
 for i, l in enumerate(labels):
     d[10 + 4*i:14 + 4*i] = l.encode().ljust(4, b'\0')
 d[42:50] = bytes([64, 0, 0, 0, 0, 0, 0, 0])     # defaults
-d[50:54] = bytes.fromhex('11111111')           # format bytes
+d[50:54] = bytes.fromhex('11111111')           # display formats: a nibble per knob, 1 = 0..127, 0 = hidden
 ```
 
 ## 6. Register it

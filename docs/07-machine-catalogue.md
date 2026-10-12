@@ -29,8 +29,30 @@ including flash banks (through the CS0 alias).
 | `+8` | 2 | Machine suffix, e.g. `SN`, `DL`. The UI shows `FAM-SX`. |
 | `+10` | 32 | Eight parameter labels, 4 bytes each, NUL-padded (uppercase, digits, space, `-`) |
 | `+42` | 8 | Eight default parameter values, 0–127 |
-| `+50` | 4 | "Format" bytes. Stock values vary per machine (e.g. `11 31 33 31` for EFM-BD); all custom machines use `11 11 11 11`. **Hypothesis**: one nibble per knob selecting the value display format. |
+| `+50` | 4 | Display formats, **one nibble per knob**: `+50` holds knobs 1–2, `+51` knobs 3–4, `+52` knobs 5–6, `+53` knobs 7–8. **`0` hides the knob** in the synthesis editor; the knob still sends its value. `1` shows a plain 0–127 value. Stock values vary (GND-SIN `11 31 00 00`, EFM-BD `11 31 33 31`); see [display formats](#display-format-nibbles). |
 | `+54` | 32 | Not interpreted. Custom descriptors copy these bytes from the GND-SIN descriptor. |
+
+### Display format nibbles
+
+Each synthesis knob has a 4-bit display format in bytes `+50..+53`, two knobs
+per byte.
+
+- **`0` hides the knob.** GND-SIN's `11 31 00 00` shows its four knobs and
+  hides knobs 5–8.
+  - **Hardware confirmation (2026-10-11):** a GND-SIN-based machine was given
+    two more parameters on knobs 5 and 6, with labels, defaults and a handler
+    that read them. On hardware the knobs changed the sound but did not appear
+    in the synthesis editor: their nibbles were still `0`. Setting byte `+52`
+    to `11` should show them; that build awaits a hardware check.
+- **`1` is a plain 0–127 value.** Every custom machine in this kit uses
+  `11 11 11 11` and shows its labelled knobs.
+- **Not yet decoded:** the other values stock machines use (`3`, for instance,
+  on GND-SIN's RAMP and on several EFM knobs), and which nibble of a byte
+  belongs to which knob.
+
+To add knobs to a machine derived from a stock descriptor, set their nibbles to
+`1`, or the editor will not display them. To hide unused knobs, set theirs to
+`0`.
 
 Custom descriptors are built from the GND-SIN record (`0x24EFAA`, ID 1) by
 replacing the handler, ID, family, suffix, labels, defaults and format bytes.
