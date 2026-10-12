@@ -172,7 +172,7 @@ def descriptor(mainos, handler, ident, family, suffix, labels, defaults,
     if any(not 0 <= v <= 127 for v in defaults):
         raise ImageError('defaults are 0..127')
     d[42:50] = bytes(defaults)
-    d[50:54] = bytes(format_bytes)  # a display nibble per knob: 1 = 0..127, 0 = hidden
+    d[50:54] = bytes(format_bytes)  # a display nibble per knob, high first: 1 = 0..127, 5 = -64..63, 0 = hidden
     return bytes(d)
 
 

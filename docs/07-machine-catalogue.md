@@ -29,13 +29,22 @@ including flash banks (through the CS0 alias).
 | `+8` | 2 | Machine suffix, e.g. `SN`, `DL`. The UI shows `FAM-SX`. |
 | `+10` | 32 | Eight parameter labels, 4 bytes each, NUL-padded (uppercase, digits, space, `-`) |
 | `+42` | 8 | Eight default parameter values, 0–127 |
-| `+50` | 4 | Display formats, **one nibble per knob**: `+50` holds knobs 1–2, `+51` knobs 3–4, `+52` knobs 5–6, `+53` knobs 7–8. **`0` hides the knob** in the synthesis editor; the knob still sends its value. `1` shows a plain 0–127 value. Stock values vary (GND-SIN `11 31 00 00`, EFM-BD `11 31 33 31`); see [display formats](#display-format-nibbles). |
+| `+50` | 4 | Display formats, **one nibble per knob, high nibble first**: `+50` holds knobs 1–2, `+51` knobs 3–4, `+52` knobs 5–6, `+53` knobs 7–8. **`0` hides the knob** in the synthesis editor; the knob still sends its value. `1` shows a plain 0–127 value, `5` a signed −64…63 value. Stock values vary (GND-SIN `11 31 00 00`, EFM-BD `11 31 33 31`, ROM `51 11 11 11`); see [display formats](#display-format-nibbles). |
 | `+54` | 32 | Not interpreted. Custom descriptors copy these bytes from the GND-SIN descriptor. |
 
 ### Display format nibbles
 
 Each synthesis knob has a 4-bit display format in bytes `+50..+53`, two knobs
-per byte.
+per byte, **high nibble first**. The ROM and RAM-P machines use `51 11 11 11`:
+their first knob, PTCH (default 64), has format `5`, so the first knob of each
+byte is in the high nibble.
+
+| Value | Display | Example |
+| --- | --- | --- |
+| `0` | Hidden: the knob still sends its value, but the editor does not show it | GND-SIN knobs 5–8 |
+| `1` | Plain 0–127 | Most knobs |
+| `3` | Not decoded | GND-SIN RAMP, several EFM knobs |
+| `5` | Signed −64…63, centred on raw 64 | ROM and RAM-P PTCH |
 
 - **`0` hides the knob.** GND-SIN's `11 31 00 00` shows its four knobs and
   hides knobs 5–8.
@@ -46,13 +55,14 @@ per byte.
     to `11` should show them; that build awaits a hardware check.
 - **`1` is a plain 0–127 value.** Every custom machine in this kit uses
   `11 11 11 11` and shows its labelled knobs.
-- **Not yet decoded:** the other values stock machines use (`3`, for instance,
-  on GND-SIN's RAMP and on several EFM knobs), and which nibble of a byte
-  belongs to which knob.
+- **`5` is a signed offset display.** A GND-SIN-based machine that adds
+  semitone offsets on knobs 5 and 6 (default 64, shown as 0) sets byte `+52`
+  to `55`, copying the ROM machines' PTCH.
+- **Not yet decoded:** `3` and the other values stock machines use.
 
 To add knobs to a machine derived from a stock descriptor, set their nibbles to
-`1`, or the editor will not display them. To hide unused knobs, set theirs to
-`0`.
+`1`, or `5` for a value centred on 64; otherwise the editor will not display
+them. To hide unused knobs, set theirs to `0`.
 
 Custom descriptors are built from the GND-SIN record (`0x24EFAA`, ID 1) by
 replacing the handler, ID, family, suffix, labels, defaults and format bytes.
