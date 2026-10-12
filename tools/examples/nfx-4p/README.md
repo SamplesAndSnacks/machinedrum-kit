@@ -16,7 +16,7 @@ machine the kit does not have.
 | FREQ | 64 | Cutoff, the same curve as NFX-SV, `0.001 + 2.25·c⁴` |
 | RESO | 0 | Feedback `fb = 5·RESO/127`; self-oscillates above about 100 |
 | MODE | 0 | 0–63 the 4th pole (24 dB/oct low-pass), 64–127 the 2nd pole (12 dB/oct) |
-| ENVA | 64 | Envelope depth on the cutoff: 64 none, higher sweeps up, lower down |
+| ENVA | 64 | Envelope depth on the cutoff: 64 none, higher sweeps up, lower down. The editor shows it as −64…63, 0 = none ([display format](../../../docs/07-machine-catalogue.md#display-format-nibbles) 5). |
 | ATK | 0 | Attack, charging toward twice full scale and ending at full scale: 0 instant, about 1.6 ms to 10 s |
 | DEC | 64 | Exponential decay, same knob-to-time law |
 | GAIN | 64 | Drive into the ladder: passband gain `9.6·(GAIN/127)⁴`, 0.62 at 64 |

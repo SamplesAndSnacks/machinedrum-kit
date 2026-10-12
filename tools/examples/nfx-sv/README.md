@@ -16,7 +16,7 @@ machine the kit does not have.
 | FREQ | 64 | Cutoff, `0.001 + 2.25·c⁴` of the sample rate, about 7 Hz to 16.8 kHz |
 | RESO | 0 | Damping, 0.9 down to 0.001 |
 | MODE | 0 | 0 low-pass, 64 band-pass, 127 high-pass, linear blends between |
-| ENVA | 64 | Envelope depth on the cutoff: 64 none, higher sweeps up, lower down |
+| ENVA | 64 | Envelope depth on the cutoff: 64 none, higher sweeps up, lower down. The editor shows it as −64…63, 0 = none ([display format](../../../docs/07-machine-catalogue.md#display-format-nibbles) 5). |
 | ATK | 0 | Attack, charging toward twice full scale and ending at full scale: 0 instant, about 1.6 ms to 10 s |
 | DEC | 64 | Exponential decay, same knob-to-time law |
 | GAIN | 64 | Input level: 0 silent, 64 unity, 127 = 1.98× |

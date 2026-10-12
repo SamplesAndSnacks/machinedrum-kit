@@ -60,7 +60,9 @@ def build(firmware, asm, output, prefix='m68k-linux-gnu-', version=None):
     table_cpu = img.flash_cpu(FLASH_BANK + TABLE_OFF)
     menu_cpu = img.flash_cpu(FLASH_BANK + MENU_OFF)
     desc_cpu = img.flash_cpu(FLASH_BANK + DESC_OFF)
-    desc = mc.descriptor(main, cf['svf_control'], ID, 'NFX', 'SV', LABELS, DEFAULTS)
+    # Display formats, a nibble per knob: ENVA (knob 4, centre 64) as signed -64..63.
+    desc = mc.descriptor(main, cf['svf_control'], ID, 'NFX', 'SV', LABELS, DEFAULTS,
+                         format_bytes=bytes.fromhex('11151111'))
 
     # E12 out (MainOS and DSP2), family table with NFX appended, ID 9.
     removed = mc.remove_e12_machines(main, dsp)
