@@ -1,5 +1,7 @@
 # Machinedrum Kit
 
+Copyright (c) 2026 Janne Heikkarainen (janne808@radiofreerobotron.net)
+
 Reverse-engineered documentation for building custom machines into Elektron
 Machinedrum SPS-1UW firmware. It covers:
 
