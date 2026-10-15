@@ -226,8 +226,9 @@ hardware (see [emulation and verification](docs/16-emulation-and-verification.md
 
 ## Legal
 
-Elektron owns the Machinedrum firmware. This repository documents its structure
-for interoperability. You need your own copy of the firmware to use it. Flashing
-modified firmware is at your own risk, but the boot-ROM updater never erases its
-own sector, so a device can always be recovered by sending the stock OS update
-(see [SysEx updates](docs/05-sysex-updates.md#recovery)).
+This work is not affiliated with Elektron. Elektron owns the Machinedrum firmware.
+This repository documents its structure for interoperability, it is not intended for
+redistributing the firmware in any form. You need your own copy of the firmware to use
+it. Flashing modified firmware is at your own risk, but the boot-ROM updater never
+erases its own sector, so a device can always be recovered by sending the stock OS
+update (see [SysEx updates](docs/05-sysex-updates.md#recovery)).
